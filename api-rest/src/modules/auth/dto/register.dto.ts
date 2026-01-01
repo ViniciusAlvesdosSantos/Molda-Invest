@@ -1,19 +1,27 @@
-import { IsEmail, IsString, MinLength, Matches } from 'class-validator'
+import { IsEmail, IsString, MinLength, Matches, IsIdentityCard } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger';
+import { IsCpf } from 'src/common/decorators/IsCpf.decorator';
 
 export class CreateAuthDto {
     @ApiProperty({example: "usuario@example.com",
         description: "Email do usuário"
     })   
     @IsEmail({}, { message: 'Email inválido' })
-    readonly email: string;
+    email: string;
 
     @ApiProperty({
         example: "Vinicius Alves",
         description: "Nome completo do usuário"
     })
     @IsString({ message: 'Nome deve ser uma string' })
-    readonly name: string;
+    name: string;
+
+    @ApiProperty({
+        example: "123456789-99",
+        description: "Cpf do usuário"
+    })
+    @IsCpf()
+    cpf: string;
 
     @ApiProperty({
         example: 'Senha@123',
@@ -28,5 +36,5 @@ export class CreateAuthDto {
             message: 'A senha deve conter pelo menos uma letra maiúscula, uma minúscula, um número e um símbolo'
         }
     )    
-    readonly password: string;
+    password: string;
 }
