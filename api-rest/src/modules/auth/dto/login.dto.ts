@@ -7,7 +7,7 @@ export class LoginDto {
     description: 'Email do usuário',
   })    
   @IsEmail()
-  readonly email: string;
+  email: string;
 
   @ApiProperty({
     example: 'Senha@123',
@@ -16,5 +16,5 @@ export class LoginDto {
     minLength: 8,
   })
   @IsString()
-  readonly password: string;
+  password: string;
 }

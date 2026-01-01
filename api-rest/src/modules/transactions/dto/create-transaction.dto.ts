@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsString, IsNotEmpty, IsNumber, IsPositive, IsEnum, IsDateString, IsOptional } from "class-validator";
+import { IsString, IsNotEmpty, IsNumber, IsPositive, IsEnum, IsDateString, IsOptional, IsArray } from "class-validator";
 import { Type } from "class-transformer";
 import { TransactionType } from "src/common/enums/transaction-type.enum";
 
@@ -49,5 +49,29 @@ export class CreateTransactionDto {
     @IsNotEmpty()
     categoryId: string;
 
+    @ApiPropertyOptional({
+        example: "Conta Corrente",
+        description: "ID da conta"
+    })
+    @IsString()
+    @IsNotEmpty()
+    accountId: string;
+
+    @ApiPropertyOptional({
+        example: "Pagamento referente ao mês de dezembro",
+        description: "Notas adicionais"
+    })
+    @IsOptional()
+    @IsString()
+    notes?: string;
+
+    @ApiPropertyOptional({
+        example: ["salario", "dezembro"],
+        description: "Tags para a transação"
+    })
+    @IsOptional()
+    @IsArray()
+    @IsString({ each: true })
+    tags?: string[];
 }
 

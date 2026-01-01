@@ -17,7 +17,6 @@ import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import type { RequestWithUser } from 'src/common/interfaces/request-with-user.interface';
-import { CategoriesService } from '../categories-services/categories.service';
 
 @ApiTags('Transações')
 @Controller('transactions')

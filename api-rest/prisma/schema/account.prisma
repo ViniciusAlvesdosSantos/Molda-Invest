@@ -1,0 +1,31 @@
+// ============================================
+// FINANCIAL CORE
+// ============================================
+enum AccountStatus {
+    ACTIVE
+    SUSPENDED
+    CLOSED
+}
+
+model Account {
+  id            Int        @id @default(autoincrement())
+  accountName   String
+  color         String?
+  balance       Decimal       @default(0) @db.Decimal(19, 4)
+  status        AccountStatus @default(ACTIVE)
+  icon          String?
+  
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  userId        Int
+  
+  user          User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  transactions  Transaction[]
+  investments   Investment[]
+
+  @@map("accounts")
+  @@index([userId])
+  @@index([status])
+  @@index([accountName])
+}

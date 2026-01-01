@@ -1,22 +1,39 @@
 enum TransactionType {
-  INCOME // Receita (Entrada)
-  EXPENSE // Despesa (Saída)
-  INVESTMENT //Investimentos
+  INCOME            // Receita (salário, freelance, etc)
+  EXPENSE           // Despesa (compras, contas, etc)
+  INVESTMENT        // Aplicação em investimento
+  TRANSFER          // Transferência entre contas
 }
 
+
 model Transaction {
-  id          String          @id @default(uuid())
-  description String
-  amount      Float
-  date        DateTime
-  type        TransactionType
-  userId      String
-  categoryId  String
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  id              String            @id @default(uuid())
+  description     String
+  amount          Decimal           @db.Decimal(19, 4)
+  type            TransactionType
+  data            DateTime
+  
+  balanceBefore   Decimal           @db.Decimal(19, 4)
+  balanceAfter    Decimal           @db.Decimal(19, 4)
+  
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime?          @updatedAt
+  
+  userId          Int
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user     User      @relation(fields: [userId], references: [id])
-  category Category? @relation(fields: [categoryId], references: [id])
+  accountId       Int
+  account         Account           @relation(fields: [accountId], references: [id], onDelete: Restrict)
 
+  categoryId      Int?
+  category        Category?         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  investmentId    String?
+  investment      Investment?       @relation(fields: [investmentId], references: [id], onDelete: SetNull)
+  
   @@map("transactions")
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([accountId])
+  @@index([categoryId])
+  @@index([type])
 }

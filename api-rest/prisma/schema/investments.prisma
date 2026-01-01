@@ -1,0 +1,40 @@
+enum InvestmentType {
+    STOCK // Ações (PETR4, VALE3)
+    FII // Fundos Imobiliários (HGLG11)
+    FIXED_INCOME // Renda Fixa (CDB, Tesouro)
+    CRYPTO // Criptomoedas (BTC, ETH)
+    FUND // Fundos de Investimento
+    ETF // ETFs (BOVA11, IVVB11)
+}
+
+model Investment {
+  id              String           @id @default(uuid())
+  name            String
+  type            InvestmentType
+  
+  // Quanto ela pagou no total (Soma dos aportes)
+  totalInvested   Decimal          @db.Decimal(19, 4)
+  
+  // Opcional: Para ela atualizar quanto vale hoje e ver o lucro
+  currentValue    Decimal?         @db.Decimal(19, 4) 
+  
+  purchaseDate    DateTime
+  lastUpdate      DateTime         @default(now())
+  
+  metadata        Json?            // Ex: { "ticker": "PETR4", "corretora": "XP" }
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  userId          Int              
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId       Int
+  account         Account          @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  
+  transactions    Transaction[]
+  
+  @@map("investments")
+  @@index([userId])
+  @@index([accountId])
+  @@index([type])
+}
