@@ -20,7 +20,7 @@ export class CategoriesController {
     @Body() createCategoryDto: CreateCategoryDto
   ) {
     console.log('🎯 User no controller:', req.user); // ✅ Debug
-    return this.categoriesService.create(req.user.sub, createCategoryDto);
+    return this.categoriesService.create(Number(req.user.sub), createCategoryDto);
   }
 
   @Get()
@@ -35,7 +35,7 @@ export class CategoriesController {
   @ApiOperation({ summary: 'Buscar categoria por ID' })
   findOne(
     @Request() req: RequestWithUser,
-    @Param('id') id: string
+    @Param('id') id: number
   ) {
     return this.categoriesService.findOne(id, req.user.sub);
   }
@@ -44,7 +44,7 @@ export class CategoriesController {
   @ApiOperation({ summary: 'Atualizar categoria' })
   update(
     @Request() req: RequestWithUser,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateCategoryDto: UpdateCategoryDto
   ) {
     return this.categoriesService.update(id, req.user.sub, updateCategoryDto);
@@ -54,7 +54,7 @@ export class CategoriesController {
   @ApiOperation({ summary: 'Deletar categoria' })
   remove(
     @Request() req: RequestWithUser,
-    @Param('id') id: string
+    @Param('id') id: number
   ) {
     return this.categoriesService.remove(id, req.user.sub);
   }
