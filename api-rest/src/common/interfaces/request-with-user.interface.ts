@@ -2,7 +2,9 @@ import { Request } from 'express'
 
 export interface RequestWithUser extends Request {
     user: {
-        sub: string;
+        sub: number;
         email: string;
+        iat?: number;     // Issued at
+        exp?: number;     // Expires at
     }
 }
