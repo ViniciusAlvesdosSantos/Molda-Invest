@@ -70,9 +70,9 @@ export class AccountsController {
     return this.accountsService.getBalance(req.user.sub, accountId)
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.accountsService.findOne(+id);
+  @Get()
+  findAccounts(@Request() req: RequestWithUser) {
+    return this.accountsService.findOne(req.user.sub);
   }
 
   @Patch(':id')

@@ -70,7 +70,7 @@ export class AccountsService {
     if(!userId) throw new NotFoundException(`Id de usuário ${userId} não encontrado` )
 
     try {
-      await this.prisma.account.findFirst({
+      const response = await this.prisma.account.findFirst({
         where:{
           userId,
           id: accountId
@@ -79,13 +79,21 @@ export class AccountsService {
           balance: true
         }
       })
+
+      return response;
     } catch(error){
       throw new Error('Busca de balance falhou')
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} account`;
+  async findOne(userId: number) {
+    if(!userId) throw new NotFoundException('Usuário não encontrado')
+
+    return await this.prisma.account.findMany({
+      where: {
+        userId
+      }
+    })
   }
 
   update(id: number, updateAccountDto: UpdateAccountDto) {
