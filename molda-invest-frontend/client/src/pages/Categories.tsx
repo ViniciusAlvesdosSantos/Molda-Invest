@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createCategorySchema } from '@/lib/validators';
+import Header from '@/components/Header';
 
 export default function Categories() {
   const isAuthenticated = useRequireAuth();
@@ -76,10 +77,15 @@ export default function Categories() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-card border-b border-border sticky top-0 z-40">
-        <div className="container flex items-center justify-between h-16">
-          <h1 className="text-2xl font-bold text-foreground">Categorias</h1>
+      <Header showBalance={true} />
+
+      {/* Main Content */}
+      <main className="container py-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Categorias</h1>
+            <p className="text-muted-foreground mt-1">Organize suas transações</p>
+          </div>
           <Button
             variant="primary"
             leftIcon={<Plus className="w-4 h-4" />}
@@ -88,10 +94,6 @@ export default function Categories() {
             Nova Categoria
           </Button>
         </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container py-8">
         {/* Tabs */}
         <div className="flex gap-4 mb-8 border-b border-border">
           {[TransactionType.INCOME, TransactionType.EXPENSE].map((type) => (

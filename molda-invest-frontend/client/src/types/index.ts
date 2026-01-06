@@ -141,6 +141,7 @@ export interface Category {
   icon: string;
   color: string;
   type: TransactionType;
+  budget: number | null;
   userId: string;
   createdAt: string;
   updatedAt: string;
@@ -151,6 +152,7 @@ export interface CreateCategoryRequest {
   icon?: string;
   color?: string;
   type: TransactionType;
+  budget?: number;
 }
 
 export interface UpdateCategoryRequest {
@@ -158,6 +160,7 @@ export interface UpdateCategoryRequest {
   icon?: string;
   color?: string;
   type?: TransactionType;
+  budget?: number;
 }
 
 // Investment Types

@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createInvestmentSchema } from '@/lib/validators';
+import Header from '@/components/Header';
 
 export default function Investments() {
   const isAuthenticated = useRequireAuth();
@@ -93,10 +94,15 @@ export default function Investments() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-card border-b border-border sticky top-0 z-40">
-        <div className="container flex items-center justify-between h-16">
-          <h1 className="text-2xl font-bold text-foreground">Investimentos</h1>
+      <Header showBalance={true} />
+
+      {/* Main Content */}
+      <header className="container py-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Investimentos</h1>
+            <p className="text-muted-foreground mt-1">Acompanhe seus investimentos</p>
+          </div>
           <Button
             variant="primary"
             leftIcon={<Plus className="w-4 h-4" />}

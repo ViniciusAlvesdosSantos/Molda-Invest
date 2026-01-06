@@ -27,6 +27,7 @@ export const useAccountStore = create<AccountState>()(
       isLoading: false,
       error: null,
 
+
       fetchAccounts: async () => {
         set({ isLoading: true, error: null });
         try {
