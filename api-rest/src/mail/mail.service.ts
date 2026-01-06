@@ -1,22 +1,38 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Resend } from 'resend';
+import * as nodemailer from 'nodemailer';
+import { Transporter } from 'nodemailer';
+import { VerifyEmailDto } from 'src/modules/auth/dto/verify-email.dto';
+import { AuthService } from 'src/modules/auth/services/auth.service';
 
 @Injectable()
 export class MailService {
   private readonly logger = new Logger(MailService.name);
-  private resend: Resend;
+  private transporter: Transporter;
 
-  constructor(private configService: ConfigService) {
-    const apiKey = this.configService.get<string>('RESEND_API_KEY');
-    
-    if (!apiKey) {
-      this.logger.error('❌ RESEND_API_KEY não encontrada no arquivo .env');
-      throw new Error('RESEND_API_KEY não configurada');
-    }
+  constructor(
+    private configService: ConfigService
+  ) {
+    // ✅ Configurar SMTP do Gmail
+    this.transporter = nodemailer.createTransport({
+      host: this.configService.get('SMTP_HOST', 'smtp.gmail.com'),
+      port: this.configService.get('SMTP_PORT', 587),
+      secure: false, // true para 465, false para outras portas
+      auth: {
+        user: this.configService.get('SMTP_USER'),
+        pass: this.configService.get('SMTP_PASS'),
+      },
+    });
 
-    this.resend = new Resend(apiKey);
-    this.logger.log('✅ MailService inicializado com sucesso');
+    // ✅ Testar conexão
+    this.transporter.verify((error, success) => {
+      if (error) {
+        this.logger.error('❌ Erro ao conectar ao servidor SMTP:');
+        this.logger.error(error);
+      } else {
+        this.logger.log('✅ MailService inicializado com sucesso (Gmail SMTP)');
+      }
+    });
   }
 
   /**
@@ -24,8 +40,8 @@ export class MailService {
    */
   async sendVerificationEmail(to: string, verificationUrl: string) {
     try {
-      const { data, error } = await this.resend.emails.send({
-        from: 'Molda Invest <onboarding@resend.dev>', // ✅ USAR DOMÍNIO DE TESTE
+      const info = await this.transporter.sendMail({
+        from: this.configService.get('SMTP_FROM', '"Molda Invest" <vinicius.adsbusiness@gmail.com>'),
         to,
         subject: 'Verifique seu email - Molda Invest',
         html: `
@@ -43,7 +59,7 @@ export class MailService {
             </div>
 
             <div style="text-align: center; margin: 30px 0;">
-              <a href="${verificationUrl}" 
+              <a href="${verificationUrl}"  
                  style="display: inline-block; background-color: #6366f1; color: white; 
                         padding: 14px 32px; text-decoration: none; border-radius: 8px; 
                         font-weight: bold; font-size: 16px;">
@@ -76,18 +92,15 @@ export class MailService {
         `,
       });
 
-      if (error) {
-        this.logger.error('❌ Erro ao enviar email de verificação:');
-        this.logger.error(error);
-        throw new Error('Falha ao enviar email de verificação');
-      }
-
       this.logger.log(`✅ Email de verificação enviado para: ${to}`);
-      return data;
+      this.logger.log(`Token ${verificationUrl}`)
+      this.logger.log(`📧 Message ID: ${info.messageId}`);
+      
+      return info;
     } catch (error) {
-      this.logger.error('❌ Erro ao enviar email:');
+      this.logger.error('❌ Erro ao enviar email de verificação:');
       this.logger.error(error);
-      throw error;
+      throw new Error('Falha ao enviar email de verificação');
     }
   }
 
@@ -96,8 +109,8 @@ export class MailService {
    */
   async sendLoginOtp(to: string, otpCode: string) {
     try {
-      const { data, error } = await this.resend.emails.send({
-        from: 'Molda Invest <onboarding@resend.dev>', // ✅ USAR DOMÍNIO DE TESTE
+      const info = await this.transporter.sendMail({
+        from: this.configService.get('SMTP_FROM', '"Molda Invest" <vinicius.adsbusiness@gmail.com>'),
         to,
         subject: 'Seu código de login - Molda Invest',
         html: `
@@ -140,18 +153,13 @@ export class MailService {
         `,
       });
 
-      if (error) {
-        this.logger.error('❌ Erro ao enviar OTP:');
-        this.logger.error(error);
-        throw new Error('Falha ao enviar código de verificação');
-      }
-
       this.logger.log(`✅ OTP enviado para: ${to}`);
-      return data;
+      this.logger.log(`📧 Message ID: ${info.messageId}`);
+      return info;
     } catch (error) {
       this.logger.error('❌ Erro ao enviar OTP:');
       this.logger.error(error);
-      throw error;
+      throw new Error('Falha ao enviar código de verificação');
     }
   }
 
@@ -160,15 +168,15 @@ export class MailService {
    */
   async testEmail(to: string) {
     try {
-      const { data, error } = await this.resend.emails.send({
-        from: 'Molda Invest <onboarding@resend.dev>', // ✅ USAR DOMÍNIO DE TESTE
+      const info = await this.transporter.sendMail({
+        from: this.configService.get('SMTP_FROM', '"Molda Invest" <vinicius.adsbusiness@gmail.com>'),
         to,
         subject: '🧪 Email de Teste - Molda Invest',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <h1 style="color: #10b981;">✅ Email Funcionando!</h1>
             <p style="font-size: 16px; color: #475569;">
-              Se você recebeu este email, a integração com Resend está configurada corretamente.
+              Se você recebeu este email, a integração com Gmail SMTP está configurada corretamente.
             </p>
             <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;">
             <div style="background: #f1f5f9; padding: 15px; border-radius: 4px;">
@@ -178,23 +186,21 @@ export class MailService {
               <p style="margin: 5px 0; font-size: 14px; color: #64748b;">
                 <strong>Timestamp:</strong> ${new Date().toLocaleString('pt-BR')}
               </p>
+              <p style="margin: 5px 0; font-size: 14px; color: #64748b;">
+                <strong>SMTP:</strong> Gmail (${this.configService.get('SMTP_USER')})
+              </p>
             </div>
           </div>
         `,
       });
 
-      if (error) {
-        this.logger.error('❌ Erro no teste de email:');
-        this.logger.error(error);
-        throw new Error('Falha no teste de email');
-      }
-
       this.logger.log(`✅ Email de teste enviado para: ${to}`);
-      return data;
+      this.logger.log(`📧 Message ID: ${info.messageId}`);
+      return info;
     } catch (error) {
       this.logger.error('❌ Erro no teste de email:');
       this.logger.error(error);
-      throw error;
+      throw new Error('Falha no teste de email');
     }
   }
 }

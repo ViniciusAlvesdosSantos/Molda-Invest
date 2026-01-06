@@ -8,6 +8,7 @@ import { CategoriesModule } from './modules/categories-services/categories.modul
 import { PrismaModule } from './database/prisma.module';
 import { AccountsModule } from './modules/accounts/accounts.module';
 import { MailModule } from './mail/mail.module';
+import { TransactionsModule } from './modules/transactions/transactions.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -21,6 +22,7 @@ import { MailModule } from './mail/mail.module';
     AuthModule,
     CategoriesModule,
     AccountsModule,
+    TransactionsModule
   ],
   controllers: [AppController],
   providers: [AppService],

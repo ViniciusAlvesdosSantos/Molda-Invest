@@ -32,11 +32,11 @@ export class CreateCategoryDto {
     type: TransactionType;
 
     @ApiProperty({
-        example: "Gastos totais com alimentação",
-        description: "Descrição da categoria",
+        example: "#059669",
+        description: "Cor da categoria",
         required: false
     })
     @IsOptional()
     @IsString()
-    description?: string;
+    color?: string
 }

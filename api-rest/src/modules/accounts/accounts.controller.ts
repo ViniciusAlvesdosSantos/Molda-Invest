@@ -51,17 +51,23 @@ export class AccountsController {
   })
   @ApiResponse({
     status: 404,
-    description: 'Conta não encontrada'
+    description: 'Recurso não encontrado'
   })
-  create(
+  async create(
     @Request() req: RequestWithUser,
     @Body() createAccountDto: CreateAccountDto,
   ) {
+    return await this.accountsService.create(req.user.sub, createAccountDto)
   }
 
-  @Get()
+  @Get('admin/allAccounts')
   findAll() {
-    return this.accountsService.findAll();
+    return this.accountsService.findAllSystem();
+  }
+
+  @Get('balance/:id')
+  async getBalance(@Request() req: RequestWithUser, @Param('id') accountId : number){
+    return this.accountsService.getBalance(req.user.sub, accountId)
   }
 
   @Get(':id')

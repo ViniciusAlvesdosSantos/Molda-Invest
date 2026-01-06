@@ -6,16 +6,17 @@ import { JwtModule } from '@nestjs/jwt';
 import { CategoriesModule } from '../categories-services/categories.module';
 import { MailModule } from '../../mail/mail.module';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { AccountsModule } from '../accounts/accounts.module';
 
 @Module({
   imports: [
     ConfigModule, // ✅ ADICIONAR ESTA LINHA
     forwardRef(() => CategoriesModule),
+    forwardRef(()=> AccountsModule),
     MailModule,
     JwtModule.register({
       global: true,
-      secret: process.env.JWT_SECRET || 'segredo_temporario_dev',
-      signOptions: { expiresIn: '7d' },
+      secret: process.env.JWT_SECRET || 'segredo_temporario_dev'
     })
   ],
   controllers: [AuthController],
