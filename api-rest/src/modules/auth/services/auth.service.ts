@@ -128,7 +128,6 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
     });
-    console.log(user);
     if (!user) {
       throw new NotFoundException('Usuário não encontrado');
     }
@@ -205,7 +204,6 @@ export class AuthService {
   // ========================================
 
   async requestLogin(requestLoginDto: LoginDto): Promise<{ message: string }> {
-    console.log('cheguei no req com: ' + JSON.stringify(requestLoginDto));
     const user = await this.prisma.user.findFirst({
       where: {
         OR: [
@@ -218,7 +216,7 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException('Email ou CPF não encontrado');
     }
-    console.log(user.isEmailVerified);
+    
     if (!user.isEmailVerified) {
       throw new UnauthorizedException(
         'Email não verificado. Verifique seu email antes de fazer login.',

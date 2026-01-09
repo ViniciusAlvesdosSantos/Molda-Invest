@@ -11,7 +11,7 @@ import { TransactionsModule } from './modules/transactions/transactions.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, // ✅ GARANTIR QUE ESTÁ TRUE
+      isGlobal: true,
       envFilePath: '.env',
       cache: true,
     }),

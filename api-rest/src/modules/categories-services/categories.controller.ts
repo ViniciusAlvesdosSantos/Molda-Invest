@@ -35,7 +35,6 @@ export class CategoriesController {
     @Request() req : RequestWithUser,
     @Body() createCategoryDto: CreateCategoryDto
   ) {
-    console.log('🎯 User no controller:', req.user);
     return this.categoriesService.create(Number(req.user.sub), createCategoryDto);
   }
 
