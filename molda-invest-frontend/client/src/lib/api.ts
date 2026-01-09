@@ -30,7 +30,6 @@ const api: AxiosInstance = axios.create({
 // Request Interceptor - Add JWT token to all requests
 api.interceptors.request.use(
   (config) => {
-    console.log('📤 Request:', config.method?.toUpperCase(), config.url);
     
     if (!isPublicEndpoint(config.url)) {
       const accessToken = localStorage.getItem('accessToken');
@@ -38,13 +37,10 @@ api.interceptors.request.use(
       // ✅ Verificar se é uma string válida
       if (accessToken && typeof accessToken === 'string' && accessToken.length > 0) {
         config.headers.Authorization = `Bearer ${accessToken}`;
-        console.log('🔑 Token adicionado ao header');
       } else {
         console.warn('⚠️ AccessToken inválido:', typeof accessToken, accessToken);
       }
-    } else {
-      console.log('🔓 Endpoint público - sem token');
-    }
+    } 
     return config;
   },
   (error) => {
