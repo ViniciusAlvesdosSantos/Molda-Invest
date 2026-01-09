@@ -13,6 +13,14 @@ async function bootstrap() {
   
   const app = await NestFactory.create(AppModule);
   
+  // Configuração do CORS
+  app.enableCors({
+    origin: ['http://localhost:8080', 'http://localhost:5173', 'http://localhost:3001'], // Adicione todas as origens do seu frontend
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    credentials: true,
+  });
+  
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
     forbidNonWhitelisted: true,
@@ -40,6 +48,7 @@ async function bootstrap() {
   console.log(chalk.cyan('📚 Documentação:'), chalk.white(`http://localhost:${port}/api/docs`));
   console.log(chalk.cyan('🏥 Health Check:'), chalk.white(`http://localhost:${port}/health`));
   console.log(chalk.cyan('📊 Ambiente:    '), chalk.white(process.env.NODE_ENV || 'development'));
+  console.log(chalk.cyan('🔒 CORS:        '), chalk.white('Habilitado'));
   console.log('\n');
   console.log(chalk.yellow.bold('🔗 Rotas disponíveis:\n'));
   
@@ -60,3 +69,4 @@ async function bootstrap() {
   console.log('\n');
 }
 bootstrap();
+

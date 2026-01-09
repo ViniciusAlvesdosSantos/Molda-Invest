@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Request, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Request, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -8,23 +8,50 @@ import type { RequestWithUser } from 'src/common/interfaces/request-with-user.in
 
 @ApiTags('Categorias')
 @Controller('categories')
-@UseGuards(JwtAuthGuard) // ✅ Protege todas as rotas
+@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Criar nova categoria customizada' })
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ 
+    summary: 'Criar nova categoria',
+    description: 'Cria uma categoria customizada para o usuário autenticado'
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Categoria criada com sucesso'
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Dados inválidos'
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token não fornecido ou inválido'
+  })
   create(
     @Request() req : RequestWithUser,
     @Body() createCategoryDto: CreateCategoryDto
   ) {
-    console.log('🎯 User no controller:', req.user); // ✅ Debug
+    console.log('🎯 User no controller:', req.user);
     return this.categoriesService.create(Number(req.user.sub), createCategoryDto);
   }
 
   @Get()
-  @ApiOperation({ summary: 'Listar todas as categorias com filtros e paginação' })
+  @ApiOperation({ 
+    summary: 'Listar categorias',
+    description: 'Retorna todas as categorias do usuário (padrão + customizadas)'
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de categorias retornada com sucesso'
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token não fornecido ou inválido'
+  })
   findAll(
     @Request() req: RequestWithUser
   ) {
@@ -32,7 +59,27 @@ export class CategoriesController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Buscar categoria por ID' })
+  @ApiOperation({ 
+    summary: 'Buscar categoria por ID',
+    description: 'Retorna detalhes de uma categoria específica'
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID da categoria',
+    type: Number
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Categoria encontrada'
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token não fornecido ou inválido'
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Categoria não encontrada ou acesso negado'
+  })
   findOne(
     @Request() req: RequestWithUser,
     @Param('id') id: number
@@ -41,7 +88,35 @@ export class CategoriesController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Atualizar categoria' })
+  @ApiOperation({ 
+    summary: 'Atualizar categoria',
+    description: 'Atualiza uma categoria customizada do usuário'
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID da categoria',
+    type: Number
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Categoria atualizada com sucesso'
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Dados inválidos'
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token não fornecido ou inválido'
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Categoria não encontrada ou acesso negado'
+  })
+  @ApiResponse({
+    status: 405,
+    description: 'Não é possível editar categorias padrão do sistema'
+  })
   update(
     @Request() req: RequestWithUser,
     @Param('id') id: number,
@@ -51,7 +126,32 @@ export class CategoriesController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Deletar categoria' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ 
+    summary: 'Deletar categoria',
+    description: 'Remove uma categoria customizada do usuário'
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID da categoria',
+    type: Number
+  })
+  @ApiResponse({
+    status: 204,
+    description: 'Categoria deletada com sucesso'
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token não fornecido ou inválido'
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Categoria não encontrada ou acesso negado'
+  })
+  @ApiResponse({
+    status: 405,
+    description: 'Não é possível deletar categorias padrão do sistema'
+  })
   remove(
     @Request() req: RequestWithUser,
     @Param('id') id: number

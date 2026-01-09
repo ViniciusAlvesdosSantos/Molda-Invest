@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsString, IsNotEmpty, IsNumber, IsPositive, IsEnum, IsDateString, IsOptional, IsArray } from "class-validator";
+import { IsString, IsNotEmpty, IsNumber, IsPositive, IsEnum, IsDateString, IsOptional, IsArray, Matches } from "class-validator";
 import { Type } from "class-transformer";
 import { TransactionType } from "src/common/enums/transaction-type.enum";
 
@@ -20,8 +20,8 @@ export class CreateTransactionDto {
     })
     @IsNumber({ maxDecimalPlaces: 2 })
     @IsPositive()
-    @Type(()=>Number)
-    amount : number
+    @Matches(/^(?!0+(?:\\.0{1,2})?$)\d{1,10}(\.\d{1,2})?$/)
+    amount : string
 
     @ApiProperty({
         example: "2024-12-26T10:30:00.000Z",

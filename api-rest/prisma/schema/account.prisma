@@ -28,4 +28,5 @@ model Account {
   @@index([userId])
   @@index([status])
   @@index([accountName])
+  @@index([balance])
 }

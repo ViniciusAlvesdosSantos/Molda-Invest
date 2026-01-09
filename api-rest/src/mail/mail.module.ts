@@ -5,6 +5,6 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [ConfigModule],
   providers: [MailService],
-  exports: [MailService], // ✅ IMPORTANTE: Exportar
+  exports: [MailService],
 })
 export class MailModule {}

@@ -9,6 +9,7 @@ import { formatCurrency, formatDate } from '@/lib/formatters';
 import { TransactionType } from '@/types';
 import { ArrowLeft, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
 import { toast } from 'sonner';
+import Header from '@/components/Header';
 
 export default function AccountDetail() {
   const isAuthenticated = useRequireAuth();
@@ -51,44 +52,41 @@ export default function AccountDetail() {
   const accountTransactions = transactions.filter((t) => t.accountId === id);
   const income = accountTransactions
     .filter((t) => t.type === TransactionType.INCOME)
-    .reduce((sum, t) => sum + t.amount, 0);
+    .reduce((sum, t) => sum + Number(t.amount), 0);
   const expense = accountTransactions
     .filter((t) => t.type === TransactionType.EXPENSE)
-    .reduce((sum, t) => sum + t.amount, 0);
+    .reduce((sum, t) => sum + Number(t.amount), 0);
   const balance = income - expense;
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-card border-b border-border sticky top-0 z-40">
-        <div className="container flex items-center justify-between h-16">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              leftIcon={<ArrowLeft className="w-4 h-4" />}
-              onClick={() => setLocation('/accounts')}
-            >
-              Voltar
-            </Button>
-            <div className="flex items-center gap-3">
-              <div
-                className="w-10 h-10 rounded-lg flex items-center justify-center text-lg"
-                style={{ backgroundColor: account.color + '20' }}
-              >
-                {account.icon || '💰'}
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-foreground">{account.accountName}</h1>
-                <p className="text-sm text-muted-foreground">Detalhes da Conta</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header showBalance={true} />
 
       {/* Main Content */}
       <main className="container py-8">
+        <div className="flex items-center gap-4 mb-6">
+          <Button
+            variant="ghost"
+            size="sm"
+            leftIcon={<ArrowLeft className="w-4 h-4" />}
+            onClick={() => setLocation('/accounts')}
+          >
+            Voltar
+          </Button>
+          <div className="flex items-center gap-3">
+            <div
+              className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl"
+              style={{ backgroundColor: account.color + '20' }}
+            >
+              {account.icon || '💰'}
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">{account.accountName}</h1>
+              <p className="text-muted-foreground">Detalhes da conta</p>
+            </div>
+          </div>
+        </div>
+
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Card>

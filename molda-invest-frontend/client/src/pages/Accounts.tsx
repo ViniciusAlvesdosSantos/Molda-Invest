@@ -13,6 +13,8 @@ import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createAccountSchema, type CreateAccountFormData } from '@/lib/validators';
+import CreateTransactionModal from '@/components/ui/CreateTransactionModal';
+import Header from '@/components/Header';
 
 export default function Accounts() {
   const isAuthenticated = useRequireAuth();
@@ -73,23 +75,25 @@ export default function Accounts() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-card border-b border-border sticky top-0 z-40">
-        <div className="container flex items-center justify-between h-16">
-          <h1 className="text-2xl font-bold text-foreground">Contas</h1>
+      <Header showBalance={true} />
+
+      {/* Main Content */}
+      <main className="container py-8">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Contas</h1>
+            <p className="text-muted-foreground mt-1">Gerencie suas contas bancárias</p>
+          </div>
           <Button
             variant="primary"
             leftIcon={<Plus className="w-4 h-4" />}
             onClick={() => setIsModalOpen(true)}
-          >
-            Nova Conta
-          </Button>
-        </div>
-      </header>
+        >
+          Nova Conta
+        </Button>
+      </div>
 
-      {/* Main Content */}
-      <main className="container py-8">
-        {isLoading ? (
+      {isLoading ? (
           <div className="flex items-center justify-center h-64">
             <p className="text-muted-foreground">Carregando contas...</p>
           </div>
@@ -101,6 +105,11 @@ export default function Accounts() {
               onClick={() => setIsModalOpen(true)}
             >
               Criar Primeira Conta
+            </Button>
+            <Button 
+              variant='secondary'
+              onClick={() => setIsModalOpen(true)}>
+              Adicionar Transação
             </Button>
           </div>
         ) : (
@@ -232,6 +241,12 @@ export default function Accounts() {
           </ModalFooter>
         </form>
       </Modal>
+
+      <CreateTransactionModal
+      isOpen={isModalOpen}
+      onClose={()=> setIsModalOpen(false)}
+      
+      />
     </div>
   );
 }

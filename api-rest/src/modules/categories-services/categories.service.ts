@@ -168,26 +168,27 @@ export class CategoriesService {
 
   async create(userId: number, createCategoryDto: CreateCategoryDto) {
     // ✅ Validar se já existe categoria com mesmo nome e tipo
-    // const existing = await this.prisma.category.findFirst({
-    //   where: {
-    //     userId,
-    //     name: createCategoryDto.name,
-    //     // type: createCategoryDto.type,
-    //   },
-    // });
+    const existing = await this.prisma.category.findFirst({
+      where: {
+        userId,
+        name: createCategoryDto.name,
+        // type: createCategoryDto.type,
+      },
+    });
 
-    // if (existing) {
-    //   throw new ConflictException(
-    //     `Categoria "${createCategoryDto.name}" do tipo ${createCategoryDto.type} já existe`
-    //   );
-    // }
+    if (existing) {
+      throw new ConflictException(
+        `Categoria "${createCategoryDto.name}" do tipo ${createCategoryDto.type} já existe`
+      );
+    }
 
-    // return this.prisma.category.create({
-    //   data: {
-    //     ...createCategoryDto,
-    //     userId,
-    //   },
-    // });
+    return this.prisma.category.create({
+      data: {
+        ...createCategoryDto,
+        type: createCategoryDto.type as TransactionType,
+        userId,
+      },
+    });
   }
 
   // ========================================
@@ -197,14 +198,13 @@ export class CategoriesService {
   async findAll(userId: number, type?: TransactionType) {
     // ✅ CORREÇÃO: Usar Prisma.CategoryWhereInput
     const whereClause: Prisma.CategoryWhereInput = { userId };
-    
     if (type) {
       whereClause.type = type; // ✅ Agora funciona!
     }
 
     return this.prisma.category.findMany({
       where: whereClause,
-      orderBy: { name: 'asc' },
+      orderBy: { id: 'asc' },
       select: {
         id: true,
         name: true,
@@ -261,32 +261,35 @@ export class CategoriesService {
     userId: number,
     updateCategoryDto: UpdateCategoryDto,
   ) {
-    // await this.findOne(id, userId);
+    await this.findOne(id, userId);
 
-    // // ✅ Se mudou nome ou tipo, validar duplicata
-    // if (updateCategoryDto.name || updateCategoryDto.type) {
-    //   const category = await this.findOne(id, userId);
+    // ✅ Se mudou nome ou tipo, validar duplicata
+    if (updateCategoryDto.name || updateCategoryDto.type) {
+      const category = await this.findOne(id, userId);
       
-    //   const conflicting = await this.prisma.category.findFirst({
-    //     where: {
-    //       userId,
-    //       name: updateCategoryDto.name || category.name,
-    //       type: updateCategoryDto.type || category.type,
-    //       id: { not: id },
-    //     },
-    //   });
+      const conflicting = await this.prisma.category.findFirst({
+        where: {
+          userId,
+          name: updateCategoryDto.name || category.name,
+          type: (updateCategoryDto.type || category.type) as TransactionType,
+          id: { not: id },
+        },
+      });
 
-    //   if (conflicting) {
-    //     throw new ConflictException(
-    //       `Já existe uma categoria "${updateCategoryDto.name || category.name}" do tipo ${updateCategoryDto.type || category.type}`
-    //     );
-    //   }
-    // }
+      if (conflicting) {
+        throw new ConflictException(
+          `Já existe uma categoria "${updateCategoryDto.name || category.name}" do tipo ${updateCategoryDto.type || category.type}`
+        );
+      }
+    }
 
-    // return this.prisma.category.update({
-    //   where: { id },
-    //   data: updateCategoryDto,
-    // });
+    return this.prisma.category.update({
+      where: { id },
+      data: {
+        ...updateCategoryDto,
+        type: updateCategoryDto.type as TransactionType,
+      },
+    });
   }
 
   // ========================================
