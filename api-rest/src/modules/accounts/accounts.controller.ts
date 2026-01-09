@@ -148,7 +148,6 @@ export class AccountsController {
     description: 'Conta não encontrada ou acesso negado'
   })
   async findAccount(@Request() req: RequestWithUser, @Param('id') accountId: number) {
-    console.log(accountId)
     return this.accountsService.findOneAccount(accountId, req.user.sub );
   }
 
