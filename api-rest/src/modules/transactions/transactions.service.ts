@@ -289,7 +289,7 @@ export class TransactionsService {
     // ❌ Não permitir alterar valor (afeta histórico de saldo)
     if (
       updateTransactionDto.amount &&
-      updateTransactionDto.amount !== existingTransaction.amount.toNumber()
+      Number(updateTransactionDto.amount) !== existingTransaction.amount.toNumber()
     ) {
       throw new BadRequestException(
         'Não é possível alterar o valor de uma transação. Delete e crie uma nova para manter a integridade do histórico.'

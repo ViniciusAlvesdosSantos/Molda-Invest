@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CategoriesModule } from './modules/categories-services/categories.module';
 import { PrismaModule } from './database/prisma.module';
@@ -18,7 +17,6 @@ import { TransactionsModule } from './modules/transactions/transactions.module';
     }),
     PrismaModule,
     MailModule,
-    UsersModule,
     AuthModule,
     CategoriesModule,
     AccountsModule,
