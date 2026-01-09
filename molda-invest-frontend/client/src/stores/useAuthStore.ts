@@ -44,14 +44,11 @@ export const useAuthStore = create<AuthState>()(
       login: async (identifier: string, otpCode: string) => {
         set({ isLoading: true, error: null });
         try {
-          console.log('🔵 Store - Fazendo login');
           
           const response = await api.post('/auth/verify-otp', {
             identifier,
             otpCode,
           });
-
-          console.log('🔵 Store - Resposta completa:', response.data);
 
           const { accessToken, refreshToken, user } = response.data;
 
@@ -60,19 +57,11 @@ export const useAuthStore = create<AuthState>()(
             throw new Error('Tokens inválidos recebidos da API');
           }
 
-          console.log('✅ Store - AccessToken tipo:', typeof accessToken);
-          console.log('✅ Store - RefreshToken tipo:', typeof refreshToken);
-
-          // ✅ Salvar diretamente no localStorage (não depender do persist)
           localStorage.setItem('accessToken', accessToken);
           localStorage.setItem('refreshToken', refreshToken);
           if (user) {
             localStorage.setItem('user', JSON.stringify(user));
           }
-
-          console.log('✅ Store - Tokens salvos no localStorage');
-
-          // ✅ Atualizar o store
           set({
             accessToken,
             refreshToken,
@@ -80,8 +69,6 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
             isLoading: false,
           });
-
-          console.log('✅ Store - Estado atualizado');
           return true;
         } catch (error: any) {
           console.error('❌ Store - Erro no login:', error);
@@ -109,8 +96,6 @@ export const useAuthStore = create<AuthState>()(
         // ✅ Buscar do localStorage ao invés do store
         const accessToken = localStorage.getItem('accessToken');
         const userStr = localStorage.getItem('user');
-        
-        console.log('🔍 checkAuth - AccessToken:', !!accessToken);
         
         if (!accessToken) {
           set({ isAuthenticated: false });
